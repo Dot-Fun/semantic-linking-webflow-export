@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import type { KeyboardEvent } from "react";
 import { ChevronRight, ChevronDown, FileText } from "lucide-react";
 
 interface BlogPost {
@@ -56,7 +57,7 @@ export function BlogSidebar({ currentPostId, onSelectPost }: BlogSidebarProps) {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>, index: number) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       const nextIndex = Math.min(index + 1, posts.length - 1);
@@ -82,7 +83,7 @@ export function BlogSidebar({ currentPostId, onSelectPost }: BlogSidebarProps) {
     <div
       className={`${
         isCollapsed ? "w-12" : "w-64"
-      } bg-gray-50 border-r border-gray-200 transition-all duration-300 flex flex-col h-full`}
+      } bg-gray-50 border-r border-gray-200 transition-all duration-300 flex flex-col h-screen sticky top-0`}
     >
       <div className="p-3 border-b border-gray-200">
         <button

@@ -48,7 +48,10 @@ export function BlogViewer({ initialIndex = 0 }: BlogViewerProps) {
   }, [currentIndex, total]);
 
   const fetchPost = async (index: number) => {
-    setLoading(true);
+    // Don't set loading to true if we already have a post (prevents flash)
+    if (!post) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -79,34 +82,10 @@ export function BlogViewer({ initialIndex = 0 }: BlogViewerProps) {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-red-500">Error: {error}</div>
-      </div>
-    );
-  }
-
-  if (!post) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-500">No post found</div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <BlogSidebar
-        currentPostId={post.id}
+        currentPostId={post?.id || null}
         onSelectPost={setCurrentIndex}
       />
       
@@ -122,46 +101,62 @@ export function BlogViewer({ initialIndex = 0 }: BlogViewerProps) {
           />
 
           <article className="bg-white rounded-lg shadow-sm p-8 mt-6">
-            <header className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">{post.name}</h1>
-            
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-              {post.authorName && <span>By {post.authorName}</span>}
-              {post.date && (
-                <span>{new Date(post.date).toLocaleDateString()}</span>
-              )}
-              {post.readTime && <span>{post.readTime}</span>}
-            </div>
-
-            {post.categoriesPlainText && (
-              <div className="mt-4">
-                <div className="flex flex-wrap gap-2">
-                  {post.categoriesPlainText.split(";").map((category, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
-                    >
-                      {category.trim()}
-                    </span>
-                  ))}
-                </div>
+            {loading && !post ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-lg text-gray-500">Loading...</div>
               </div>
+            ) : error ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-red-500">Error: {error}</div>
+              </div>
+            ) : !post ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-gray-500">No post found</div>
+              </div>
+            ) : (
+              <>
+                <header className="mb-8">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-4">{post.name}</h1>
+                
+                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                    {post.authorName && <span>By {post.authorName}</span>}
+                    {post.date && (
+                      <span>{new Date(post.date).toLocaleDateString()}</span>
+                    )}
+                    {post.readTime && <span>{post.readTime}</span>}
+                  </div>
+
+                  {post.categoriesPlainText && (
+                    <div className="mt-4">
+                      <div className="flex flex-wrap gap-2">
+                        {post.categoriesPlainText.split(";").map((category, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                          >
+                            {category.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </header>
+
+                {post.description && (
+                  <div className="mb-8 text-lg text-gray-700 italic">
+                    {post.description}
+                  </div>
+                )}
+
+                {post.content && (
+                  <div
+                    className="prose max-w-none"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                  />
+                )}
+              </>
             )}
-          </header>
-
-          {post.description && (
-            <div className="mb-8 text-lg text-gray-700 italic">
-              {post.description}
-            </div>
-          )}
-
-          {post.content && (
-            <div
-              className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-          )}
-        </article>
+          </article>
         </div>
       </div>
     </div>
