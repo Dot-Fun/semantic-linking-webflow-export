@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model BlogPost {
+  id                   Int       @id @default(autoincrement())
+  name                 String
+  slug                 String
+  collectionId         String
+  localeId             String
+  itemId               String    @unique
+  archived             Boolean   @default(false)
+  draft                Boolean   @default(false)
+  createdOn            DateTime?
+  updatedOn            DateTime?
+  publishedOn          DateTime?
+  metaDescription      String?
+  featuredImage        String?
+  date                 DateTime?
+  description          String?
+  authorName           String?
+  categories           String?
+  categoriesPlainText  String?
+  featuredCategory     String?
+  content              String?
+  isFeatured           Boolean   @default(false)
+  highlightedBlog      Boolean   @default(false)
+  readTime             String?
+
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([date])
+  @@index([authorName])
+}
