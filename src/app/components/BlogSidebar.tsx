@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ChevronRight, ChevronDown, FileText } from "lucide-react";
 
 interface BlogPost {
@@ -20,10 +20,29 @@ export function BlogSidebar({ currentPostId, onSelectPost }: BlogSidebarProps) {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    // Set focused index when currentPostId changes
+    if (currentPostId !== null && posts.length > 0) {
+      const index = posts.findIndex(post => post.id === currentPostId);
+      if (index !== -1) {
+        setFocusedIndex(index);
+      }
+    }
+  }, [currentPostId, posts]);
+
+  useEffect(() => {
+    // Focus the element when focusedIndex changes
+    if (focusedIndex !== null && itemRefs.current[focusedIndex]) {
+      itemRefs.current[focusedIndex]?.focus();
+    }
+  }, [focusedIndex]);
 
   const fetchPosts = async () => {
     try {
@@ -34,6 +53,20 @@ export function BlogSidebar({ currentPostId, onSelectPost }: BlogSidebarProps) {
       console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const nextIndex = Math.min(index + 1, posts.length - 1);
+      setFocusedIndex(nextIndex);
+      onSelectPost(nextIndex);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prevIndex = Math.max(index - 1, 0);
+      setFocusedIndex(prevIndex);
+      onSelectPost(prevIndex);
     }
   };
 
@@ -73,7 +106,11 @@ export function BlogSidebar({ currentPostId, onSelectPost }: BlogSidebarProps) {
             {posts.map((post, index) => (
               <li key={post.id}>
                 <button
+                  ref={(el) => {
+                    itemRefs.current[index] = el;
+                  }}
                   onClick={() => onSelectPost(index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
                   className={`w-full px-3 py-2 text-left hover:bg-gray-100 transition-colors flex items-center gap-2 ${
                     currentPostId === post.id ? "bg-blue-50 text-blue-700" : "text-gray-700"
                   }`}
