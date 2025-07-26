@@ -1,5 +1,5 @@
-import { BlogViewer } from "./components/BlogViewer";
+import { EnhancedBlogViewer } from "./components/EnhancedBlogViewer";
 
 export default function Home() {
-  return <BlogViewer initialIndex={0} />;
+  return <EnhancedBlogViewer initialIndex={0} />;
 }

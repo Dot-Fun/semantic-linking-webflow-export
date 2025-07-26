@@ -2,14 +2,16 @@
 
 ## Overview
 
-The Semantic Links System analyzes blog posts to identify and suggest contextual links between related content. It uses Claude AI to analyze semantic relationships and provides an intuitive interface for reviewing and approving these links.
+The Semantic Links System is fully integrated into the main blog viewer interface. It analyzes blog posts to identify and suggest contextual links between related content using Claude AI, with an intuitive tabbed interface for reviewing and approving these links.
 
 ## Features
 
+- **Integrated Experience**: All functionality built into the main blog viewer at `/`
 - **Parallel Analysis**: Analyzes all 100 blog posts simultaneously using 10 parallel workers
 - **AI-Powered**: Uses Claude to identify high-quality semantic relationships
-- **Split-Screen Review**: View original and updated content side-by-side
-- **Bidirectional Links**: Manage both incoming and outgoing links
+- **Progressive UI**: Tabs appear only after analysis is initiated
+- **Tabbed Interface**: Switch between Content, Updated, Links From, and Links To views
+- **Sidebar Progress**: Real-time analysis progress shown in the sidebar
 - **Confidence Scoring**: Links are scored 0-100% with only 70%+ suggested
 - **Bulk Operations**: Approve all high-confidence links with one click
 - **CSV Export**: Export the entire database with approved links in Webflow format
@@ -23,44 +25,61 @@ Edit the `.env` file and add your Anthropic API key:
 ANTHROPIC_API_KEY="your-api-key-here"
 ```
 
-### 2. Access the Semantic Links Manager
+### 2. Access the Blog Viewer
 
-Navigate to: http://localhost:3000/semantic-links
+Navigate to: http://localhost:3001/
 
 ### 3. Start Analysis
 
-Click "Analyze All Posts" to begin the semantic analysis. This will:
+Click "Analyze All Posts" button at the bottom of the interface. This will:
 - Create 100 analysis jobs (one per blog post)
 - Process them in parallel (10 at a time)
-- Identify potential semantic links between posts
+- Show real-time progress in the sidebar
+- Automatically enable tabs when analysis begins
 
 The analysis typically takes 3-5 minutes for 100 posts.
 
-### 4. Review Links
+### 4. Progressive Interface
 
-Once analysis is complete:
+The interface adapts based on analysis state:
 
-1. **Select a post** from the left sidebar
-2. **Review suggested links** using the tabs:
-   - **Original**: View the original content
-   - **Updated**: Preview content with approved links highlighted
-   - **Links From**: Review incoming links from other posts
-   - **Links To**: Review outgoing links to other posts
+**Before Analysis:**
+- Normal blog viewer with content display
+- "Analyze All Posts" button at bottom
+
+**During/After Analysis:**
+- Progress indicator appears in sidebar
+- Tabs appear above content: Content | Updated | Links From | Links To
+- Link counts shown in tab labels
+- Export CSV button appears in header
+
+### 5. Review Links
+
+Once analysis starts:
+
+1. **Navigate posts** using the sidebar (with keyboard support)
+2. **Switch tabs** to review different aspects:
+   - **Content**: Original post content
+   - **Updated**: Preview with approved links highlighted (green) and pending links (yellow)
+   - **Links From**: Incoming links from other posts
+   - **Links To**: Outgoing links to other posts
 
 3. **For each link**, you can:
    - ✅ **Approve**: Add the link to the content
    - ❌ **Reject**: Dismiss the suggestion
    - 🔗 **View**: Open the linked post in a new tab
 
-### 5. Bulk Approve High-Confidence Links
+### 6. Bulk Operations
 
-Click "Approve All High Confidence" to automatically approve all links with 85%+ confidence scores.
+Use the action buttons at the bottom:
+- **Approve All High Confidence**: Automatically approve links with 85%+ confidence
+- **Re-analyze All**: Clear existing analysis and start fresh
 
-### 6. Export to CSV
+### 7. Export to CSV
 
-Once you've reviewed and approved the desired links:
-1. Click "Export CSV" in the top-right corner
-2. The system will generate a Webflow-compatible CSV with:
+Once you've reviewed and approved links:
+1. Click "Export CSV" in the top-right header
+2. The system generates a Webflow-compatible CSV with:
    - All original fields preserved
    - Content field updated with approved links
    - Proper HTML formatting for Webflow

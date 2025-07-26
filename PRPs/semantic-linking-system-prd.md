@@ -78,26 +78,35 @@ Currently, creating meaningful semantic links between blog posts is a manual, ti
 
 ## User Interface Design
 
-### Main Dashboard
+### Integrated Blog Viewer
+The semantic linking system is fully integrated into the main blog viewer at the root URL (`/`). No separate pages or navigation required.
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ Semantic Link Analyzer                           [Export CSV]│
+│ Blog Viewer                                      [Export CSV]│
 ├─────────────────────────────────────────────────────────────┤
 │ ┌─────────────┐ ┌─────────────────────────────────────────┐│
-│ │ Blog List   │ │ Content Viewer                          ││
+│ │ Blog Posts  │ │ Content Viewer                          ││
 │ │             │ ├─────────────────────────────────────────┤│
-│ │ ▼ Post 1 ●  │ │ Original │ Updated │ Links From │ To   ││
+│ │ ▼ Post 1 ●  │ │ Content │ Updated │ Links From │ To    ││
 │ │   Post 2    │ ├─────────────────────────────────────────┤│
 │ │   Post 3    │ │                                         ││
-│ │   ...       │ │ [Split screen content comparison]      ││
+│ │   ...       │ │ [Dynamic content area with tabs]       ││
 │ │             │ │                                         ││
-│ │ Progress:   │ │                                         ││
+│ │ ─────────   │ │                                         ││
+│ │ Analysis:   │ │                                         ││
 │ │ ████░░ 67%  │ │                                         ││
 │ └─────────────┘ └─────────────────────────────────────────┘│
 │                                                             │
-│ [Analyze All Posts] [Approve All High Confidence] [Reset] │
+│ [Analyze All Posts] [Approve All High Confidence] [← →]   │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+### Key Integration Points
+1. **Single URL**: Everything at `http://localhost:3001/` 
+2. **Progressive UI**: Tabs appear only after analysis starts
+3. **Seamless Experience**: No page navigation required
+4. **Persistent State**: Analysis continues in background while browsing
 
 ### Link Review Interface
 - **Original Content**: Clean view with existing links highlighted
@@ -220,37 +229,48 @@ The export will maintain the exact same CSV structure as the original Webflow ex
 - Keyboard shortcuts for efficiency
 - Undo/redo functionality
 
-## Implementation Phases
+## Implementation Approach
 
-### Phase 1: Core Infrastructure (Week 1)
-- Database schema setup
-- Basic API structure
-- Queue system implementation
-- Authentication setup
+### Integration Strategy
+1. **Enhance BlogViewer Component**
+   - Add state management for semantic links
+   - Integrate tabs into the content area
+   - Handle analysis status and progress
+   
+2. **Upgrade BlogSidebar**
+   - Add collapsible analysis progress section
+   - Show real-time job status during analysis
+   - Maintain existing navigation functionality
 
-### Phase 2: Analysis Engine (Week 2)
-- AI integration
-- Parallel processing system
-- Progress tracking
-- Error handling
+3. **Unified Action Bar**
+   - Place main actions at bottom of interface
+   - Include: Analyze All Posts, Approve High Confidence, Export CSV
+   - Add Previous/Next navigation buttons
 
-### Phase 3: Review Interface (Week 3)
-- Split-screen content viewer
-- Link management panels
-- Approval workflows
-- Visual indicators
+4. **Progressive Enhancement**
+   - Default view shows normal blog content
+   - After analysis starts, tabs appear
+   - Links panel populated as analysis completes
+   - Export only enabled when links approved
 
-### Phase 4: Export System (Week 4)
-- CSV generation
-- Content transformation
-- Download functionality
-- Validation checks
-
-### Phase 5: Polish & Testing (Week 5)
-- Performance optimization
-- UI/UX refinements
-- Comprehensive testing
-- Documentation
+### Component Architecture
+```
+App (/)
+├── BlogViewer (enhanced)
+│   ├── BlogSidebar
+│   │   ├── PostList
+│   │   └── AnalysisProgress (when active)
+│   ├── ContentArea
+│   │   ├── ContentTab (default)
+│   │   ├── UpdatedTab (with approved links)
+│   │   ├── LinksFromTab
+│   │   └── LinksToTab
+│   └── ActionBar
+│       ├── AnalyzeButton
+│       ├── ApproveAllButton
+│       ├── ExportButton
+│       └── NavigationButtons
+└── API Routes (existing)
 
 ## Success Metrics
 
