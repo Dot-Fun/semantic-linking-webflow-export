@@ -41,7 +41,54 @@ model BlogPost {
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 
+  // Relations
+  linksFrom            SemanticLink[] @relation("SourcePost")
+  linksTo              SemanticLink[] @relation("TargetPost")
+  analysisJobs         AnalysisJob[]
+
   @@index([slug])
   @@index([date])
   @@index([authorName])
+}
+
+model SemanticLink {
+  id                   String    @id @default(cuid())
+  sourcePostId         Int
+  targetPostId         Int
+  linkText             String
+  linkPosition         Int
+  altText              String
+  confidence           Float
+  status               String    @default("pending") // pending, approved, rejected
+  reasoning            String
+  createdAt            DateTime  @default(now())
+  reviewedAt           DateTime?
+  reviewedBy           String?
+
+  // Relations
+  sourcePost           BlogPost  @relation("SourcePost", fields: [sourcePostId], references: [id])
+  targetPost           BlogPost  @relation("TargetPost", fields: [targetPostId], references: [id])
+
+  @@index([sourcePostId])
+  @@index([targetPostId])
+  @@index([status])
+  @@unique([sourcePostId, targetPostId, linkText, linkPosition])
+}
+
+model AnalysisJob {
+  id                   String    @id @default(cuid())
+  postId               Int
+  status               String    @default("queued") // queued, processing, completed, failed
+  progress             Float     @default(0)
+  startedAt            DateTime?
+  completedAt          DateTime?
+  error                String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relations
+  post                 BlogPost  @relation(fields: [postId], references: [id])
+
+  @@index([status])
+  @@index([postId])
 }
